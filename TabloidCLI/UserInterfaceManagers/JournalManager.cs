@@ -37,7 +37,7 @@ namespace TabloidCLI.UserInterfaceManagers
                     break;
                 case "2":
                     AddJournalEntry();
-                    break;
+                    return this;
                 case "3":
                     throw new NotImplementedException();
                     break;
