@@ -33,8 +33,8 @@ namespace TabloidCLI.UserInterfaceManagers
             switch (choice)
             {
                 case "1":
-                    throw new NotImplementedException();
-                    break;
+                    DisplayAllJournals();
+                    return this;
                 case "2":
                     AddJournalEntry();
                     return this;
@@ -56,7 +56,9 @@ namespace TabloidCLI.UserInterfaceManagers
 
             throw new NotImplementedException();
         }
-
+        /// <summary>
+        /// Adds a journal from a user with title, content and date created.
+        /// </summary>
         public void AddJournalEntry()
         {
             Console.Write("What is the title of this entry? ");
@@ -68,6 +70,15 @@ namespace TabloidCLI.UserInterfaceManagers
             Journal journal = new Journal(Title, Content, DateTime.Now);
             _journalRepository.Insert(journal);
         }
-
+        /// <summary>
+        /// This list all journals from the database
+        /// </summary>
+        public void DisplayAllJournals()
+        {
+            foreach (Journal j in _journalRepository.GetAll())
+            {
+                Console.WriteLine($"{j.Title} {j.CreateDateTime} {j.Content}");
+            }
+        }
     }
 }
