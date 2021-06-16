@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TabloidCLI.Models;
+using TabloidCLI.Repositories;
 
 namespace TabloidCLI.UserInterfaceManagers
 {
@@ -8,11 +10,16 @@ namespace TabloidCLI.UserInterfaceManagers
     {
 
         private readonly IUserInterfaceManager _parentUI;
+        private BlogRepository _blogRepository;
+        private string _connectionString;
 
         public BlogManager(IUserInterfaceManager parentUI, string connectionString)
         {
             _parentUI = parentUI;
+            _blogRepository = new BlogRepository(connectionString);
+            _connectionString = connectionString;
         }
+
 
 
         public IUserInterfaceManager Execute()
@@ -30,7 +37,7 @@ namespace TabloidCLI.UserInterfaceManagers
             switch (choice)
             {
                 case "1":
-                    throw new NotImplementedException();
+                    DisplayAllBlogs();
                     break;
                 case "2":
                     throw new NotImplementedException();
@@ -51,13 +58,16 @@ namespace TabloidCLI.UserInterfaceManagers
                     break;
             }
 
-            throw new NotImplementedException();
+            return this;
         }
 
-
-
-
-
-
+        public void DisplayAllBlogs()
+        {
+            foreach (Blog b in _blogRepository.GetAll())
+            {
+                Console.WriteLine($"{b.Title} {b.Url}");
+            }
+        }
     }
 }
+
