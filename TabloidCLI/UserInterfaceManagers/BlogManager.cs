@@ -43,7 +43,7 @@ namespace TabloidCLI.UserInterfaceManagers
                     throw new NotImplementedException();
                     break;
                 case "3":
-                    throw new NotImplementedException();
+                    Edit();
                     break;
                 case "4":
                     throw new NotImplementedException();
@@ -67,6 +67,62 @@ namespace TabloidCLI.UserInterfaceManagers
             {
                 Console.WriteLine($"{b.Title} {b.Url}");
             }
+        }
+
+        private Blog Choose(string prompt = null)
+        {
+            if (prompt == null)
+            {
+                prompt = "Please choose a Blog:";
+            }
+
+            Console.WriteLine(prompt);
+
+            List<Blog> blogs = _blogRepository.GetAll();
+
+            for (int i = 0; i < blogs.Count; i++)
+            {
+                Blog blog = blogs[i];
+                Console.WriteLine($" {i + 1}) {blog.Title}");
+            }
+            Console.Write("> ");
+
+            string input = Console.ReadLine();
+            try
+            {
+                int choice = int.Parse(input);
+                return blogs[choice - 1];
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Invalid Selection");
+                return null;
+            }
+        }
+
+        private void Edit()
+        {
+            Blog blogToEdit = Choose("Which blog post would you like to edit?");
+            if (blogToEdit == null)
+            {
+                return;
+            }
+
+            Console.WriteLine();
+            Console.Write("New blog title: ");
+            string title = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(title))
+            {
+                blogToEdit.Title = title;
+            }
+            Console.Write("New URL: ");
+            string url = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(url))
+            {
+                blogToEdit.Url = url;
+            }
+
+            _blogRepository.Update(blogToEdit);
         }
     }
 }
