@@ -124,7 +124,7 @@ namespace TabloidCLI.UserInterfaceManagers
             }
 
             _blogRepository.Update(blogToEdit);
-
+        }
         public void AddBlogPost()
         {
             Console.Write("Name this Blog post! ");

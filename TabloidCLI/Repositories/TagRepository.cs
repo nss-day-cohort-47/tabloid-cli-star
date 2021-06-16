@@ -78,7 +78,7 @@ namespace TabloidCLI
                 
                     cmd.Parameters.AddWithValue("@id", tag.Id);
 
-                    cmd.ExecuteNonQuery();
+                    tag.Id = (int)cmd.ExecuteNonQuery();
                 }
             }
         }
