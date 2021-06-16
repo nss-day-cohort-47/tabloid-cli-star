@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TabloidCLI.Models;
+using TabloidCLI.Repositories;
 
 namespace TabloidCLI.UserInterfaceManagers
 {
@@ -8,10 +10,17 @@ namespace TabloidCLI.UserInterfaceManagers
     {
 
         private readonly IUserInterfaceManager _parentUI;
+        private PostRepository _postRepository;
+        private AuthorRepository _authorRepository;
+        ///TODO: hood up blog
+        /// private BlogRepository _blogRepository;
 
         public PostManager(IUserInterfaceManager parentUI, string connectionString)
         {
             _parentUI = parentUI;
+            _postRepository = new PostRepository(connectionString);
+            _authorRepository = new AuthorRepository(connectionString);
+            // _blogRepository = new BlogRepository(connectionString);
         }
 
 
@@ -33,8 +42,8 @@ namespace TabloidCLI.UserInterfaceManagers
                     throw new NotImplementedException();
                     break;
                 case "2":
-                    throw new NotImplementedException();
-                    break;
+                    AddPost();
+                    return this;
                 case "3":
                     throw new NotImplementedException();
                     break;
@@ -56,7 +65,28 @@ namespace TabloidCLI.UserInterfaceManagers
 
 
 
+        public void AddPost()
+        {
+            Console.Write("Post Title: ");
+            string title = Console.ReadLine();
+            Console.Write("Url to post: ");
+            string url = Console.ReadLine();
+            // Add logic to catch ID's out of range
+            Console.Write("Author ID: ");
+            int authorID = int.Parse(Console.ReadLine());
+            Console.Write("Blog ID: ");
+            int blogId = int.Parse(Console.ReadLine());
+            Post post = new Post()
+            {
+                Title = title,
+                Url = url,
+                Author = _authorRepository.Get(authorID),
+                PublishDateTime = DateTime.Now,
+                //Blog = _blogRepository.get(blogId)
 
+            };
+            _postRepository.Insert(post);
+        }
 
 
     }
