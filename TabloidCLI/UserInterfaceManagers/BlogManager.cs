@@ -38,10 +38,10 @@ namespace TabloidCLI.UserInterfaceManagers
             {
                 case "1":
                     DisplayAllBlogs();
-                    break;
+                    return this;
                 case "2":
                     AddBlogPost();
-                    break;
+                    return this;
                 case "3":
                     throw new NotImplementedException();
                     break;
