@@ -44,7 +44,7 @@ namespace TabloidCLI.UserInterfaceManagers
                     break;
                 case "3":
                     Edit();
-                    break;
+                    return this;
                 case "4":
                     throw new NotImplementedException();
                     break;
