@@ -34,40 +34,40 @@ namespace TabloidCLI.Repositories
                         Blog blog = new Blog()
                         {
                             Title = reader.GetString(reader.GetOrdinal("Title")),
-                         Url = reader.GetString(reader.GetOrdinal("Url")),
-                         Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                    };
-                    blogs.Add(blog);
+                            Url = reader.GetString(reader.GetOrdinal("Url")),
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                        };
+                        blogs.Add(blog);
+                    }
+                    reader.Close();
+                    return blogs;
                 }
-                reader.Close();
-                return blogs;
             }
         }
-    }
 
 
-    public void Insert(Blog entry)
-    {
-        using (SqlConnection conn = Connection)
+        public void Insert(Blog entry)
         {
-            conn.Open();
-            using (SqlCommand cmd = conn.CreateCommand())
+            using (SqlConnection conn = Connection)
             {
-                cmd.CommandText = @"INSERT INTO Blog (Title, Url)
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"INSERT INTO Blog (Title, Url)
                                             OUTPUT INSERTED.Id
                                             VALUES (@title, @Url)";
-                cmd.Parameters.AddWithValue("@title", entry.Title);
-                cmd.Parameters.AddWithValue("@Url", entry.Url);
-                int id = (int)cmd.ExecuteScalar();
+                    cmd.Parameters.AddWithValue("@title", entry.Title);
+                    cmd.Parameters.AddWithValue("@Url", entry.Url);
+                    int id = (int)cmd.ExecuteScalar();
 
-                entry.Id = id;
+                    entry.Id = id;
+                }
             }
         }
-    }
 
-    public void Update(Blog entry)
-    {
-        throw new NotImplementedException();
+        public void Update(Blog entry)
+        {
+            throw new NotImplementedException();
+        }
     }
-}
 }

@@ -13,17 +13,5 @@ namespace TabloidCLI.Models
         {
             return $"{Title} ({Url})";
         }
-
-        //public Blog(string Title, string Url)
-        //{
-        //    this.Title = Title;
-        //    this.Url = Url;
-        //}
-
-        //public Blog(string title, string url, int Id)
-        //{
-        //    Title = title;
-        //    Url = url;
-        //}
     }
 }
