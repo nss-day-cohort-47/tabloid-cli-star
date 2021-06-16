@@ -11,7 +11,57 @@ namespace TabloidCLI.Repositories
 
         public List<Post> GetAll()
         {
-            throw new NotImplementedException();
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"Select a.FirstName as AuthorFirst,
+                                    a.LastName as AuthorLast,
+                                    a.Bio as AuthorBio,
+                                    a.Id As AuthorId, 
+                                    p.Title as PostTitle, 
+                                    p.PublishDateTime as PublistDateTime, 
+                                    p.Id as PostId, 
+                                    p.Url as PostUrl, 
+                                    b.Id as BlogId, 
+                                    b.Title as BlogTitle,
+                                    b.URL as BlogUrl
+                                    From Post as p
+                                    Join Author as a on p.AuthorId = a.id
+                                    Join Blog as b on b.id = p.BlogId;";
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    List<Post> posts = new List<Post>() { };
+                    while (reader.Read())
+                    {
+                        Post post = new Post()
+                        {
+                            Title = reader.GetString(reader.GetOrdinal("PostTitle")),
+                            Id = reader.GetInt32(reader.GetOrdinal("PostId")),
+                            Url = reader.GetString(reader.GetOrdinal("PostUrl")),
+                            PublishDateTime = reader.GetDateTime(reader.GetOrdinal("PublistDateTime")),
+                            Author = new Author()
+                            {
+                                FirstName = reader.GetString(reader.GetOrdinal("AuthorFirst")),
+                                LastName = reader.GetString(reader.GetOrdinal("AuthorLast")),
+                                Bio = reader.GetString(reader.GetOrdinal("AuthorBio")),
+                                Id = reader.GetInt32(reader.GetOrdinal("AuthorId")),
+                            },
+                            Blog = new Blog()
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("BlogId")),
+                                Title = reader.GetString(reader.GetOrdinal("BlogTitle")),
+                                Url = reader.GetString(reader.GetOrdinal("BlogUrl")),
+                            },
+
+                        };
+                        posts.Add(post);
+                    }
+                    reader.Close();
+                    return posts;
+                }
+            }
         }
 
         public Post Get(int id)
@@ -99,7 +149,7 @@ namespace TabloidCLI.Repositories
                     {
                         Console.WriteLine("A blog value or Author Value was out of range");
                     }
-                    
+
 
                 }
             }
@@ -114,5 +164,6 @@ namespace TabloidCLI.Repositories
         {
             throw new NotImplementedException();
         }
+
     }
 }
