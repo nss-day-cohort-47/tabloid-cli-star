@@ -40,7 +40,7 @@ namespace TabloidCLI.UserInterfaceManagers
                     DisplayAllBlogs();
                     break;
                 case "2":
-                    throw new NotImplementedException();
+                    AddBlogPost();
                     break;
                 case "3":
                     throw new NotImplementedException();
@@ -67,6 +67,18 @@ namespace TabloidCLI.UserInterfaceManagers
             {
                 Console.WriteLine($"{b.Title} {b.Url}");
             }
+        }
+
+        public void AddBlogPost()
+        {
+            Console.Write("Name this Blog post! ");
+            string Title = Console.ReadLine();
+
+            Console.Write("Insert URL here: ");
+            string Url = Console.ReadLine();
+
+            Blog blog = new Blog() {Title = Title, Url = Url};
+            _blogRepository.Insert(blog);
         }
     }
 }
