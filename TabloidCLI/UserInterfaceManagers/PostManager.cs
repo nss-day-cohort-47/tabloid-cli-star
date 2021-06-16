@@ -39,8 +39,8 @@ namespace TabloidCLI.UserInterfaceManagers
             switch (choice)
             {
                 case "1":
-                    throw new NotImplementedException();
-                    break;
+                    ListAll();
+                    return this;
                 case "2":
                     AddPost();
                     return this;
@@ -88,6 +88,12 @@ namespace TabloidCLI.UserInterfaceManagers
             _postRepository.Insert(post);
         }
 
-
+        public void ListAll()
+        {
+            foreach (Post p in _postRepository.GetAll())
+            {
+                Console.WriteLine($"{p.Title} {p.Url}");
+            }
+        }
     }
 }
