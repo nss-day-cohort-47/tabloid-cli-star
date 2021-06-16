@@ -46,8 +46,8 @@ namespace TabloidCLI.UserInterfaceManagers
                     Edit();
                     return this;
                 case "4":
-                    throw new NotImplementedException();
-                    break;
+                    Remove();
+                    return this;
                 case "5":
                     throw new NotImplementedException();
                     break;
@@ -124,8 +124,9 @@ namespace TabloidCLI.UserInterfaceManagers
             }
 
             _blogRepository.Update(blogToEdit);
+        }
 
-        public void AddBlogPost()
+        private void AddBlogPost()
         {
             Console.Write("Name this Blog post! ");
             string Title = Console.ReadLine();
@@ -136,6 +137,15 @@ namespace TabloidCLI.UserInterfaceManagers
             Blog blog = new Blog() {Title = Title, Url = Url};
             _blogRepository.Insert(blog);
 
+        }
+
+        private void Remove()
+        {
+            Blog blogToDelete = Choose("Select the blog you would like to delete.");
+            if (blogToDelete != null)
+            {
+                _blogRepository.Delete(blogToDelete.Id);
+            }
         }
     }
 }
