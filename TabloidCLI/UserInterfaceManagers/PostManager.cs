@@ -9,19 +9,28 @@ namespace TabloidCLI.UserInterfaceManagers
     class PostManager : IUserInterfaceManager
     {
 
+      
+   
         private readonly IUserInterfaceManager _parentUI;
         private PostRepository _postRepository;
+        private string _connectionString;
         private AuthorRepository _authorRepository;
+
         private BlogRepository _blogRepository;
         private string _connectionString;
+
 
         public PostManager(IUserInterfaceManager parentUI, string connectionString)
         {
             _parentUI = parentUI;
             _postRepository = new PostRepository(connectionString);
             _authorRepository = new AuthorRepository(connectionString);
+
+            _connectionString =  connectionString;
+          
+
             _blogRepository = new BlogRepository(connectionString);
-            _connectionString = connectionString;
+
         }
 
 
@@ -33,6 +42,7 @@ namespace TabloidCLI.UserInterfaceManagers
             Console.WriteLine("3) Edit Post");
             Console.WriteLine("4) Remove Post");
             Console.WriteLine("5) Note Management");
+            Console.WriteLine("6) Detail Management");
             Console.WriteLine("0) Return to Main Menu");
 
             Console.Write("> ");
@@ -52,7 +62,22 @@ namespace TabloidCLI.UserInterfaceManagers
                     Remove();
                     return this;
                 case "5":
+
+                    throw new NotImplementedException();
+                    break;
+                case "6":
+                    Post post = Choose();
+                    if (post == null)
+                    {
+                        return this;
+                    }
+                    else
+                    {
+                        return new PostDetailManager(this, _connectionString, post.Id);
+                    }
+
                     return new NoteManager(this, _connectionString);
+
                 case "0":
                     return _parentUI;
                 default:
