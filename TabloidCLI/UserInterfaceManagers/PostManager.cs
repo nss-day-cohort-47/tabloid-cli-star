@@ -98,7 +98,7 @@ namespace TabloidCLI.UserInterfaceManagers
         private void EditPost()
         {
             ListAll();
-            Console.Write("Enter Id of Post to Edit");
+            Console.Write("Enter Id of Post to Edit: ");
 
             int postSelect;
             while (!int.TryParse(Console.ReadLine(), out postSelect))
