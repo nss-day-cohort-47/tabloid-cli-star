@@ -16,7 +16,8 @@ namespace TabloidCLI.Repositories
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"DELETE FROM Blog WHERE id = @id";
+                    //cmd.CommandText = @"DELETE FROM Blog WHERE id = @id";
+                    cmd.CommandText = @"UPDATE Blog SET IsActive = 0 WHERE @Id = id;";
                     cmd.Parameters.AddWithValue("@id", id);
 
                     cmd.ExecuteNonQuery();
@@ -34,6 +35,7 @@ namespace TabloidCLI.Repositories
                     cmd.CommandText = @"SELECT b.Id AS BlogId,
                                                b.Title,
                                                b.Url,
+                                               b.IsActive,
                                                t.Id AS TagId,
                                                t.Name
                                           FROM Blog b 
@@ -55,6 +57,7 @@ namespace TabloidCLI.Repositories
                                 Id = reader.GetInt32(reader.GetOrdinal("BlogId")),
                                 Title = reader.GetString(reader.GetOrdinal("Title")),
                                 Url = reader.GetString(reader.GetOrdinal("Url")),
+                                IsActive = reader.GetBoolean(reader.GetOrdinal("IsActive")),
                             };
                         }
 
@@ -83,7 +86,7 @@ namespace TabloidCLI.Repositories
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     List<Blog> blogs = new List<Blog>() { };
-                    cmd.CommandText = @"Select Title, Id, Url From Blog";
+                    cmd.CommandText = @"Select Title, Id, IsActive, Url From Blog";
                     SqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
@@ -92,8 +95,13 @@ namespace TabloidCLI.Repositories
                             Title = reader.GetString(reader.GetOrdinal("Title")),
                             Url = reader.GetString(reader.GetOrdinal("Url")),
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            IsActive = reader.GetBoolean(reader.GetOrdinal("IsActive"))
+
                         };
-                        blogs.Add(blog);
+                        if (blog.IsActive)
+                        {
+                            blogs.Add(blog);
+                        }
                     }
                     reader.Close();
                     return blogs;
@@ -109,9 +117,9 @@ namespace TabloidCLI.Repositories
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"INSERT INTO Blog (Title, Url)
+                    cmd.CommandText = @"INSERT INTO Blog (Title, Url, IsActive)
                                             OUTPUT INSERTED.Id
-                                            VALUES (@title, @Url)";
+                                            VALUES (@title, @Url, 1)";
                     cmd.Parameters.AddWithValue("@title", entry.Title);
                     cmd.Parameters.AddWithValue("@Url", entry.Url);
                     int id = (int)cmd.ExecuteScalar();

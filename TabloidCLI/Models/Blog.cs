@@ -8,6 +8,7 @@ namespace TabloidCLI.Models
         public string Title { get; set; }
         public string Url { get; set; }
         public List<Tag> Tags { get; set; } = new List<Tag>();
+        public bool IsActive { get; set; }
 
         public override string ToString()
         {
