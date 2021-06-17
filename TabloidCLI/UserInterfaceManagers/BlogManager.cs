@@ -46,11 +46,10 @@ namespace TabloidCLI.UserInterfaceManagers
                     Edit();
                     return this;
                 case "4":
-                    throw new NotImplementedException();
-                    break;
+                    Remove();
+                    return this;
                 case "5":
-                    throw new NotImplementedException();
-                    break;
+                    return new NoteManager(this, _connectionString);
                 case "0":
                     return _parentUI;
                 default:
@@ -125,6 +124,7 @@ namespace TabloidCLI.UserInterfaceManagers
 
             _blogRepository.Update(blogToEdit);
         }
+        
         public void AddBlogPost()
         {
             Console.Write("Name this Blog post! ");
@@ -136,6 +136,15 @@ namespace TabloidCLI.UserInterfaceManagers
             Blog blog = new Blog() {Title = Title, Url = Url};
             _blogRepository.Insert(blog);
 
+        }
+
+        private void Remove()
+        {
+            Blog blogToDelete = Choose("Select the blog you would like to delete.");
+            if (blogToDelete != null)
+            {
+                _blogRepository.Delete(blogToDelete.Id);
+            }
         }
     }
 }
