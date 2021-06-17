@@ -133,7 +133,7 @@ namespace TabloidCLI.UserInterfaceManagers
                         int blogId;
                         while (!int.TryParse(Console.ReadLine(), out blogId) && string.IsNullOrWhiteSpace(blogId.ToString()))
                         {
-                            Console.Write("Please eneter a number or press enter to skip: ");
+                            Console.Write("Please enter a number or press enter to skip: ");
                         }
                         Console.WriteLine($"Author ID: {post.Author.Id}");
                         Console.Write("Enter New Author or Press enter: ");
