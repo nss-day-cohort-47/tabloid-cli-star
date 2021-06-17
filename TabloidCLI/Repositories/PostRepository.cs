@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.Data.SqlClient;
 using TabloidCLI.Models;
@@ -66,6 +66,7 @@ namespace TabloidCLI.Repositories
 
         public Post Get(int id)
         {
+
             {
                 using (SqlConnection conn = Connection)
                 {
@@ -113,6 +114,8 @@ namespace TabloidCLI.Repositories
                     }
                 }
             }
+            }
+
         }
 
         public List<Post> GetByAuthor(int authorId)
@@ -187,7 +190,7 @@ namespace TabloidCLI.Repositories
                         cmd.Parameters.AddWithValue("@url", post.Url);
                         cmd.Parameters.AddWithValue("@publishDateTime", post.PublishDateTime);
                         cmd.Parameters.AddWithValue("@authorId", post.Author.Id);
-                        cmd.Parameters.AddWithValue("@blogId", 1);
+                        cmd.Parameters.AddWithValue("@blogId", post.Blog.Id);
 
                         post.Id = (int)cmd.ExecuteScalar();
                     }
@@ -203,7 +206,23 @@ namespace TabloidCLI.Repositories
 
         public void Update(Post post)
         {
-            throw new NotImplementedException();
+            using (SqlConnection conn = Connection)
+            {
+
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"UPDATE Post
+                                        set Title = @title, Url = @url, BlogId = @blogId, AuthorId = @authorId
+                                        Where id = @id;";
+                    cmd.Parameters.AddWithValue("@title",post.Title);
+                    cmd.Parameters.AddWithValue("@url", post.Url);
+                    cmd.Parameters.AddWithValue("@blogId", post.Blog.Id);
+                    cmd.Parameters.AddWithValue("@authorId", post.Author.Id);
+                    cmd.Parameters.AddWithValue("@id", post.Id);
+                    cmd.ExecuteNonQuery();
+                }
+            }
         }
 
         public void Delete(int id)
