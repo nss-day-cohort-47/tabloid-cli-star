@@ -20,7 +20,8 @@ namespace TabloidCLI.Repositories
                                     a.LastName as AuthorLast,
                                     a.Bio as AuthorBio,
                                     a.Id As AuthorId, 
-                                    p.Title as PostTitle, 
+                                    p.Title as PostTitle,
+                                    p.IsActive,
                                     p.PublishDateTime as PublistDateTime, 
                                     p.Id as PostId, 
                                     p.Url as PostUrl, 
@@ -41,6 +42,7 @@ namespace TabloidCLI.Repositories
                             Id = reader.GetInt32(reader.GetOrdinal("PostId")),
                             Url = reader.GetString(reader.GetOrdinal("PostUrl")),
                             PublishDateTime = reader.GetDateTime(reader.GetOrdinal("PublistDateTime")),
+                            IsActive = reader.GetBoolean(reader.GetOrdinal("IsActive")),
                             Author = new Author()
                             {
                                 FirstName = reader.GetString(reader.GetOrdinal("AuthorFirst")),
@@ -56,7 +58,8 @@ namespace TabloidCLI.Repositories
                             },
 
                         };
-                        posts.Add(post);
+                     
+                        if (post.IsActive) { posts.Add(post); };
                     }
                     reader.Close();
                     return posts;
@@ -76,7 +79,8 @@ namespace TabloidCLI.Repositories
                         cmd.CommandText = @"SELECT p.Id AS PostId,
                                                p.Title,
                                                p.Url,
-                                               p.PublishDateTime
+                                               p.PublishDateTime,
+                                               p.IsActive
                                           FROM Post p 
                                          WHERE p.id = @id";
 
@@ -95,6 +99,7 @@ namespace TabloidCLI.Repositories
                                     Title = reader.GetString(reader.GetOrdinal("Title")),
                                     Url = reader.GetString(reader.GetOrdinal("Url")),
                                     PublishDateTime = reader.GetDateTime(reader.GetOrdinal("PublishDateTime")),
+                                    IsActive = reader.GetBoolean(reader.GetOrdinal("IsActive"))
                                 };
                             }
 
@@ -131,6 +136,7 @@ namespace TabloidCLI.Repositories
                                                p.PublishDateTime,
                                                p.AuthorId,
                                                p.BlogId,
+                                               p.IsActive,
                                                a.FirstName,
                                                a.LastName,
                                                a.Bio,
@@ -152,6 +158,7 @@ namespace TabloidCLI.Repositories
                             Title = reader.GetString(reader.GetOrdinal("PostTitle")),
                             Url = reader.GetString(reader.GetOrdinal("PostUrl")),
                             PublishDateTime = reader.GetDateTime(reader.GetOrdinal("PublishDateTime")),
+                            IsActive = reader.GetBoolean(reader.GetOrdinal("IsActive")),
                             Author = new Author()
                             {
                                 Id = reader.GetInt32(reader.GetOrdinal("AuthorId")),
@@ -185,12 +192,13 @@ namespace TabloidCLI.Repositories
                 {
                     try
                     {
-                        cmd.CommandText = @"INSERT INTO Post (Title, URL, PublishDateTime, AuthorId, BlogId) OUTPUT INSERTED.Id Values (@title, @url, @publishDateTime, @authorId, @blogId);";
+                        cmd.CommandText = @"INSERT INTO Post (Title, URL, PublishDateTime, AuthorId, BlogId, IsActive) OUTPUT INSERTED.Id Values (@title, @url, @publishDateTime, @authorId, @blogId, 1);";
                         cmd.Parameters.AddWithValue("@title", post.Title);
                         cmd.Parameters.AddWithValue("@url", post.Url);
                         cmd.Parameters.AddWithValue("@publishDateTime", post.PublishDateTime);
                         cmd.Parameters.AddWithValue("@authorId", post.Author.Id);
                         cmd.Parameters.AddWithValue("@blogId", post.Blog.Id);
+
 
                         post.Id = (int)cmd.ExecuteScalar();
                     }
@@ -213,13 +221,14 @@ namespace TabloidCLI.Repositories
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"UPDATE Post
-                                        set Title = @title, Url = @url, BlogId = @blogId, AuthorId = @authorId
+                                        set Title = @title, Url = @url, BlogId = @blogId, AuthorId = @authorId, IsActive = @IsActive
                                         Where id = @id;";
                     cmd.Parameters.AddWithValue("@title", post.Title);
                     cmd.Parameters.AddWithValue("@url", post.Url);
                     cmd.Parameters.AddWithValue("@blogId", post.Blog.Id);
                     cmd.Parameters.AddWithValue("@authorId", post.Author.Id);
                     cmd.Parameters.AddWithValue("@id", post.Id);
+                    cmd.Parameters.AddWithValue("@IsActive", post.IsActive ? 1 : 0);
                     cmd.ExecuteNonQuery();
                 }
             }
@@ -232,7 +241,7 @@ namespace TabloidCLI.Repositories
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"DELETE FROM Post WHERE id = @id";
+                    cmd.CommandText = @"UPDATE Post SET IsActive = 0  WHERE id = @id";
                     cmd.Parameters.AddWithValue("@id", id);
 
                     cmd.ExecuteNonQuery();
