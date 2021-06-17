@@ -20,7 +20,8 @@ namespace TabloidCLI
                     cmd.CommandText = @"SELECT id,
                                                FirstName,
                                                LastName,
-                                               Bio
+                                               Bio,
+                                               isActive
                                           FROM Author";
 
                     List<Author> authors = new List<Author>();
@@ -34,6 +35,7 @@ namespace TabloidCLI
                             FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
                             LastName = reader.GetString(reader.GetOrdinal("LastName")),
                             Bio = reader.GetString(reader.GetOrdinal("Bio")),
+                            isActive =  reader.GetBoolean(reader.GetOrdinal("isActive")),
                         };
                         authors.Add(author);
                     }
@@ -56,6 +58,7 @@ namespace TabloidCLI
                                                a.FirstName,
                                                a.LastName,
                                                a.Bio,
+                                               a.isActive,
                                                t.Id AS TagId,
                                                t.Name
                                           FROM Author a 
@@ -72,12 +75,15 @@ namespace TabloidCLI
                     {
                         if (author == null)
                         {
+                            //bool /*active*/ = reader.GetBoolean(reader.GetOrdinal("isActive"));
                             author = new Author()
                             {
                                 Id = reader.GetInt32(reader.GetOrdinal("AuthorId")),
                                 FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
                                 LastName = reader.GetString(reader.GetOrdinal("LastName")),
                                 Bio = reader.GetString(reader.GetOrdinal("Bio")),
+                                isActive = reader.GetBoolean(reader.GetOrdinal("isActive")),
+
                             };
                         }
 
@@ -105,8 +111,8 @@ namespace TabloidCLI
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"INSERT INTO Author (FirstName, LastName, Bio )
-                                                     VALUES (@firstName, @lastName, @bio)";
+                    cmd.CommandText = @"INSERT INTO Author (FirstName, LastName, Bio, isActive )
+                                                     VALUES (@firstName, @lastName, @bio, 1)";
                     cmd.Parameters.AddWithValue("@firstName", author.FirstName);
                     cmd.Parameters.AddWithValue("@lastName", author.LastName);
                     cmd.Parameters.AddWithValue("@bio", author.Bio);
@@ -126,13 +132,15 @@ namespace TabloidCLI
                     cmd.CommandText = @"UPDATE Author 
                                            SET FirstName = @firstName,
                                                LastName = @lastName,
-                                               bio = @bio
+                                               bio = @bio,
+                                                isActive = @isActive
                                          WHERE id = @id";
 
                     cmd.Parameters.AddWithValue("@firstName", author.FirstName);
                     cmd.Parameters.AddWithValue("@lastName", author.LastName);
                     cmd.Parameters.AddWithValue("@bio", author.Bio);
                     cmd.Parameters.AddWithValue("@id", author.Id);
+                    cmd.Parameters.AddWithValue("@isActive", author.isActive ? 1 : 0);
 
                     cmd.ExecuteNonQuery();
                 }
@@ -146,10 +154,13 @@ namespace TabloidCLI
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
+                    ///<summary
+                    /// Think about soft deletes also.  
 
-                    cmd.CommandText = @"DELETE From Post where AuthorId = @id;
-                                        DELETE From AuthorTag Where AuthorId = @id;
-                                        DELETE FROM Author WHERE id = @id";
+                    //cmd.CommandText = @"DELETE From Post where AuthorId = @id;
+                    //                    DELETE From AuthorTag Where AuthorId = @id;
+                    //                    DELETE FROM Author WHERE id = @id";
+                    cmd.CommandText = "Update Author set isActive = 0 where id = @id";
                     cmd.Parameters.AddWithValue("@id", id);
 
                     cmd.ExecuteNonQuery();
@@ -190,5 +201,5 @@ namespace TabloidCLI
                 }
             }
         }
-     }
+    }
 }

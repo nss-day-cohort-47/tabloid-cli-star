@@ -66,7 +66,12 @@ namespace TabloidCLI.UserInterfaceManagers
             List<Author> authors = _authorRepository.GetAll();
             foreach (Author author in authors)
             {
-                Console.WriteLine(author);
+                //Console.WriteLine(author.isActive);
+                if (author.isActive == true)
+                {
+
+                    Console.WriteLine(author);
+                }
             }
         }
 

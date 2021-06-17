@@ -22,5 +22,7 @@ namespace TabloidCLI.Models
         {
             return FullName;
         }
+
+        public bool isActive { get; set; }
     }
 }
