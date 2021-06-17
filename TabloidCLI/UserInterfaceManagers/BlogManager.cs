@@ -30,6 +30,7 @@ namespace TabloidCLI.UserInterfaceManagers
             Console.WriteLine("3) Edit Blog");
             Console.WriteLine("4) Remove Blog");
             Console.WriteLine("5) Note Management");
+            Console.WriteLine("6) Blog Details");
             Console.WriteLine("0) Return to Main Menu");
 
             Console.Write("> ");
@@ -50,6 +51,16 @@ namespace TabloidCLI.UserInterfaceManagers
                     return this;
                 case "5":
                     return new NoteManager(this, _connectionString);
+                case "6":
+                    Blog blog = Choose();
+                    if (blog == null)
+                    {
+                        return this;
+                    }
+                    else
+                    {
+                        return new BlogDetailManager(this, _connectionString, blog.Id);
+                    }
                 case "0":
                     return _parentUI;
                 default:
