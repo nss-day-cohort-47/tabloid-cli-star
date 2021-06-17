@@ -82,7 +82,7 @@ namespace TabloidCLI.Repositories
 
                         cmd.Parameters.AddWithValue("@id", id);
 
-                       Post post = null;
+                        Post post = null;
 
                         SqlDataReader reader = cmd.ExecuteReader();
                         while (reader.Read())
@@ -114,9 +114,9 @@ namespace TabloidCLI.Repositories
                     }
                 }
             }
-            }
-
         }
+
+
 
         public List<Post> GetByAuthor(int authorId)
         {
@@ -215,7 +215,7 @@ namespace TabloidCLI.Repositories
                     cmd.CommandText = @"UPDATE Post
                                         set Title = @title, Url = @url, BlogId = @blogId, AuthorId = @authorId
                                         Where id = @id;";
-                    cmd.Parameters.AddWithValue("@title",post.Title);
+                    cmd.Parameters.AddWithValue("@title", post.Title);
                     cmd.Parameters.AddWithValue("@url", post.Url);
                     cmd.Parameters.AddWithValue("@blogId", post.Blog.Id);
                     cmd.Parameters.AddWithValue("@authorId", post.Author.Id);
