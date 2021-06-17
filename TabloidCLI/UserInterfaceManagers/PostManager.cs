@@ -17,7 +17,7 @@ namespace TabloidCLI.UserInterfaceManagers
         private AuthorRepository _authorRepository;
 
         private BlogRepository _blogRepository;
-        private string _connectionString;
+     
 
 
         public PostManager(IUserInterfaceManager parentUI, string connectionString)
