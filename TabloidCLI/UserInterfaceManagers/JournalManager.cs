@@ -10,11 +10,13 @@ namespace TabloidCLI.UserInterfaceManagers
     {
         private IUserInterfaceManager _parentUI;
         private JournalRepository _journalRepository;
+        private string _connectionString;
 
         public JournalManager(IUserInterfaceManager parentUI, string connectionString)
         {
             _parentUI = parentUI;
             _journalRepository = new JournalRepository(connectionString);
+            _connectionString = connectionString;
         }
 
 
@@ -45,8 +47,7 @@ namespace TabloidCLI.UserInterfaceManagers
                     DeleteJournalEntry();
                     return this;
                 case "5":
-                    throw new NotImplementedException();
-                    break;
+                    return new NoteManager(this, _connectionString);
                 case "0":
                     return _parentUI;
                 default:
