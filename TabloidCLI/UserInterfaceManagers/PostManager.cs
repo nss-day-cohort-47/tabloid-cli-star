@@ -12,15 +12,14 @@ namespace TabloidCLI.UserInterfaceManagers
         private readonly IUserInterfaceManager _parentUI;
         private PostRepository _postRepository;
         private AuthorRepository _authorRepository;
-        ///TODO: hood up blog
-        /// private BlogRepository _blogRepository;
+        private BlogRepository _blogRepository;
 
         public PostManager(IUserInterfaceManager parentUI, string connectionString)
         {
             _parentUI = parentUI;
             _postRepository = new PostRepository(connectionString);
             _authorRepository = new AuthorRepository(connectionString);
-            // _blogRepository = new BlogRepository(connectionString);
+            _blogRepository = new BlogRepository(connectionString);
         }
 
 
@@ -45,8 +44,8 @@ namespace TabloidCLI.UserInterfaceManagers
                     AddPost();
                     return this;
                 case "3":
-                    throw new NotImplementedException();
-                    break;
+                    EditPost();
+                    return this;
                 case "4":
                     Remove();
                     return this;
@@ -82,7 +81,7 @@ namespace TabloidCLI.UserInterfaceManagers
                 Url = url,
                 Author = _authorRepository.Get(authorID),
                 PublishDateTime = DateTime.Now,
-                //Blog = _blogRepository.get(blogId)
+                Blog = _blogRepository.Get(blogId)
 
             };
             _postRepository.Insert(post);
@@ -92,11 +91,68 @@ namespace TabloidCLI.UserInterfaceManagers
         {
             foreach (Post p in _postRepository.GetAll())
             {
-                Console.WriteLine($"{p.Title} {p.Url}");
+                Console.WriteLine($"{p.Id}. {p.Title} {p.Url}");
             }
         }
 
+        private void EditPost()
+        {
+            ListAll();
+            Console.Write("Enter Id of Post to Edit");
 
+            int postSelect;
+            while (!int.TryParse(Console.ReadLine(), out postSelect))
+            {
+                Console.Write("Enter a Number only of the post to edit: ");
+            }
+            if (!string.IsNullOrWhiteSpace(postSelect.ToString()))
+            {
+                Post post = null;
+                try
+                {
+                    post = _postRepository.Get(postSelect);
+                    if (!string.IsNullOrEmpty(post.Title))
+                    {
+                        Console.WriteLine($"Title: {post.Title}");
+                        Console.Write("Enter New Title or Press enter: ");
+                        string newTitle = Console.ReadLine();
+                        if (!string.IsNullOrWhiteSpace(newTitle))
+                        {
+                            post.Title = newTitle;
+                        }
+                        Console.WriteLine($"URL: {post.Url}");
+                        Console.Write("Enter New URL or Press enter: ");
+                        string newUrl = Console.ReadLine();
+                        if (!string.IsNullOrWhiteSpace(newUrl))
+                        {
+                            post.Url = newUrl;
+                        }
+
+                        Console.WriteLine($"Blog ID: {post.Blog.Id}");
+                        Console.Write("Enter New blog or Press enter: ");
+                        int blogId;
+                        while (!int.TryParse(Console.ReadLine(), out blogId) && string.IsNullOrWhiteSpace(blogId.ToString()))
+                        {
+                            Console.Write("Please enter a number or press enter to skip: ");
+                        }
+                        Console.WriteLine($"Author ID: {post.Author.Id}");
+                        Console.Write("Enter New Author or Press enter: ");
+                        int authorId;
+                        while (!int.TryParse(Console.ReadLine(), out authorId) && string.IsNullOrWhiteSpace(authorId.ToString()))
+                        {
+                            Console.Write("Please eneter a number or press enter to skip: ");
+                        }
+
+                        _postRepository.Update(post);
+                    }
+                }
+                catch (NullReferenceException ex)
+                {
+                    Console.WriteLine("Edit post Not successfull, please try again");
+                }
+            }
+
+        }
         private Post Choose(string prompt = null)
         {
             if (prompt == null)
