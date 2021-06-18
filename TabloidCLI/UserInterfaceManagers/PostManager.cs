@@ -3,21 +3,22 @@ using System.Collections.Generic;
 using System.Text;
 using TabloidCLI.Models;
 using TabloidCLI.Repositories;
+using System.Linq;
 
 namespace TabloidCLI.UserInterfaceManagers
 {
     class PostManager : IUserInterfaceManager
     {
 
-      
-   
+
+
         private readonly IUserInterfaceManager _parentUI;
         private PostRepository _postRepository;
         private string _connectionString;
         private AuthorRepository _authorRepository;
 
         private BlogRepository _blogRepository;
-     
+
 
 
         public PostManager(IUserInterfaceManager parentUI, string connectionString)
@@ -26,8 +27,8 @@ namespace TabloidCLI.UserInterfaceManagers
             _postRepository = new PostRepository(connectionString);
             _authorRepository = new AuthorRepository(connectionString);
 
-            _connectionString =  connectionString;
-          
+            _connectionString = connectionString;
+
 
             _blogRepository = new BlogRepository(connectionString);
 
@@ -117,15 +118,15 @@ namespace TabloidCLI.UserInterfaceManagers
         {
             foreach (Post p in _postRepository.GetAll())
             {
-                Console.WriteLine($"{p.Id}. {p.Title} {p.Url}");
+                Console.WriteLine($"{p.Id}. {p.Title} {p.Url} {p.Blog.Title} {p.Blog.Id}");
             }
         }
 
         private void EditPost()
         {
-            ListAll();
             Console.Write("Enter Id of Post to Edit: ");
-
+            List<Post> posts = _postRepository.GetAll();
+            ListAll();
             int postSelect;
             while (!int.TryParse(Console.ReadLine(), out postSelect))
             {
@@ -134,48 +135,44 @@ namespace TabloidCLI.UserInterfaceManagers
             if (!string.IsNullOrWhiteSpace(postSelect.ToString()))
             {
                 Post post = null;
-                try
+                post = _postRepository.Get(postSelect);
+                Console.WriteLine($"{post.Title} {post.Id} {post.Blog}");
+                if (!string.IsNullOrEmpty(post.Title))
                 {
-                    post = _postRepository.Get(postSelect);
-                    if (!string.IsNullOrEmpty(post.Title))
+                    Console.WriteLine($"Title: {post.Title}");
+                    Console.Write("Enter New Title or Press enter: ");
+                    string newTitle = Console.ReadLine();
+                    if (!string.IsNullOrWhiteSpace(newTitle))
                     {
-                        Console.WriteLine($"Title: {post.Title}");
-                        Console.Write("Enter New Title or Press enter: ");
-                        string newTitle = Console.ReadLine();
-                        if (!string.IsNullOrWhiteSpace(newTitle))
-                        {
-                            post.Title = newTitle;
-                        }
-                        Console.WriteLine($"URL: {post.Url}");
-                        Console.Write("Enter New URL or Press enter: ");
-                        string newUrl = Console.ReadLine();
-                        if (!string.IsNullOrWhiteSpace(newUrl))
-                        {
-                            post.Url = newUrl;
-                        }
-
-                        Console.WriteLine($"Blog ID: {post.Blog.Id}");
-                        Console.Write("Enter New blog or Press enter: ");
-                        int blogId;
-                        while (!int.TryParse(Console.ReadLine(), out blogId) && string.IsNullOrWhiteSpace(blogId.ToString()))
-                        {
-                            Console.Write("Please enter a number or press enter to skip: ");
-                        }
-                        Console.WriteLine($"Author ID: {post.Author.Id}");
-                        Console.Write("Enter New Author or Press enter: ");
-                        int authorId;
-                        while (!int.TryParse(Console.ReadLine(), out authorId) && string.IsNullOrWhiteSpace(authorId.ToString()))
-                        {
-                            Console.Write("Please eneter a number or press enter to skip: ");
-                        }
-
-                        _postRepository.Update(post);
+                        post.Title = newTitle;
                     }
+                    Console.WriteLine($"URL: {post.Url}");
+                    Console.Write("Enter New URL or Press enter: ");
+                    string newUrl = Console.ReadLine();
+                    if (!string.IsNullOrWhiteSpace(newUrl))
+                    {
+                        post.Url = newUrl;
+                    }
+                    List<Blog> blogs = _blogRepository.GetAll();
+                    Console.WriteLine($"Blog ID: {post.Blog.Id}");
+                    Console.Write("Enter New blog or Press enter: ");
+                    int blogId;
+                    while (!int.TryParse(Console.ReadLine(), out blogId) && string.IsNullOrWhiteSpace(blogId.ToString()) && !blogs.Exists(s => s.Id == blogId)
+)
+                    {
+                        Console.Write("Please enter a number or press enter to skip: ");
+                    }
+                    Console.WriteLine($"Author ID: {post.Author.Id}");
+                    Console.Write("Enter New Author or Press enter: ");
+                    int authorId;
+                    while (!int.TryParse(Console.ReadLine(), out authorId) && string.IsNullOrWhiteSpace(authorId.ToString()))
+                    {
+                        Console.Write("Please eneter a number or press enter to skip: ");
+                    }
+
+                    _postRepository.Update(post);
                 }
-                catch (NullReferenceException ex)
-                {
-                    Console.WriteLine("Edit post Not successfull, please try again");
-                }
+
             }
 
         }
@@ -183,7 +180,7 @@ namespace TabloidCLI.UserInterfaceManagers
         {
             if (prompt == null)
             {
-                prompt = "Please choose an Post:";
+                prompt = "Please choose a Post:";
             }
 
             Console.WriteLine(prompt);
