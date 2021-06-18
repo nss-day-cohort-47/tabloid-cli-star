@@ -64,8 +64,8 @@ namespace TabloidCLI.UserInterfaceManagers
                     return this;
                 case "5":
 
-                    throw new NotImplementedException();
-                    break;
+                    return new NoteManager(this, _connectionString);
+
                 case "6":
                     Post post = Choose();
                     if (post == null)
@@ -76,8 +76,6 @@ namespace TabloidCLI.UserInterfaceManagers
                     {
                         return new PostDetailManager(this, _connectionString, post.Id);
                     }
-
-                    return new NoteManager(this, _connectionString);
 
                 case "0":
                     return _parentUI;
